@@ -5,7 +5,7 @@ on:
 jobs:
   open-or-update-on-gerrit:
     runs-on: ubuntu-latest
-    if: github.actor == 'dependabot[bot]'
+    if: github.actor == 'addshore'
     steps:
       - name: Submit Dependabot change to Gerrit
         run: |
