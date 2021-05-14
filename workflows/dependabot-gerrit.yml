@@ -1,0 +1,35 @@
+name: Dependabot to Gerrit
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+jobs:
+  open-or-update-on-gerrit:
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'
+    steps:
+      - name: Submit Dependabot change to Gerrit
+        run: |
+          # Setup the bot details
+          git config user.name "Addbot[dependabot]"
+          git config user.email "addshorewiki+addbot-dependabot@gmail.com"
+
+          # Extract things from .gitreview
+          GITREVIEW_PROJECT=$(cat .gitreview | grep project= | sed "s/project=//" | sed "s/\.git//")
+          GITREVIEW_HOST=$(cat .gitreview | grep project= | sed "s/host=//" | sed "s/\.git//")
+
+          # Create the authenticated remote for gerrit
+          git remote add gerrit "https://addbot:${{ secrets.DEPENDABOT_GERRIT_PASSWORD }}@${GITREVIEW_HOST}/r/a/${GITREVIEW_PROJECT}"
+
+          # Add a Change-Id generated from the github branch
+          # And claim the authorship of the commit
+          OLD_MSG=$(git log --format=%B -n1)
+          MSG_LINE=""
+          # Generate the "randomness" for the change id from the branch name
+          # This means that multiple alterations to the PR will submit to the same Gerrit change
+          # This will result in the exact same update having the same Change-Id across multiple Gerrit repos
+          random=$(echo ${GITHUB_REF} | git hash-object --stdin)
+          git commit --reset-author --amend -m"$OLD_MSG" -m"Change-Id: I${random}"
+
+          # And push the change for review
+          MAIN_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@)
+          git push origin HEAD:refs/for/${MAIN_BRANCH}%ready;
