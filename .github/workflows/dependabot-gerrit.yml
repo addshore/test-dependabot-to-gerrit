@@ -35,4 +35,4 @@ jobs:
           git commit --reset-author --amend -m"$OLD_MSG" -m"Change-Id: I${random}"
 
           # And push the change for review
-          git push origin HEAD:refs/for/${{ github.event.pull_request.base.ref }}%ready;
+          git push gerrit HEAD:refs/for/${{ github.event.pull_request.base.ref }}%ready;
