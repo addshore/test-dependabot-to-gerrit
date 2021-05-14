@@ -7,6 +7,8 @@ jobs:
     runs-on: ubuntu-latest
     if: github.actor == 'addshore'
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
       - name: Submit Dependabot change to Gerrit
         run: |
           # Setup the bot details
