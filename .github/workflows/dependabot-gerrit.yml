@@ -3,7 +3,7 @@ on:
   pull_request:
     types: [opened, edited, reopened, synchronize]
 jobs:
-  open-or-update-on-gerrit:
+  open-or-update-change:
     runs-on: ubuntu-latest
     if: github.actor == 'addshore'
     steps:
@@ -35,5 +35,4 @@ jobs:
           git commit --reset-author --amend -m"$OLD_MSG" -m"Change-Id: I${random}"
 
           # And push the change for review
-          MAIN_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
-          git push origin HEAD:refs/for/${MAIN_BRANCH}%ready;
+          git push origin HEAD:refs/for/${{ github.event.pull_request.base.ref }}%ready;
