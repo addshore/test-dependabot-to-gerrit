@@ -19,7 +19,7 @@ jobs:
 
           # Extract things from .gitreview
           GITREVIEW_PROJECT=$(cat .gitreview | grep project= | sed "s/project=//" | sed "s/\.git//")
-          GITREVIEW_HOST=$(cat .gitreview | grep project= | sed "s/host=//" | sed "s/\.git//")
+          GITREVIEW_HOST=$(cat .gitreview | grep host= | sed "s/host=//")
 
           # Create the authenticated remote for gerrit
           git remote add gerrit "https://addbot:${{ secrets.DEPENDABOT_GERRIT_PASSWORD }}@${GITREVIEW_HOST}/r/a/${GITREVIEW_PROJECT}"
