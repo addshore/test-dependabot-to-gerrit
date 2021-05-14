@@ -1,1 +1,1 @@
-# test-dependabot-to-gerrit
+# test-dependabot-to-gerrit6
