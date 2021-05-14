@@ -33,5 +33,5 @@ jobs:
           git commit --reset-author --amend -m"$OLD_MSG" -m"Change-Id: I${random}"
 
           # And push the change for review
-          MAIN_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@)
+          MAIN_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
           git push origin HEAD:refs/for/${MAIN_BRANCH}%ready;
