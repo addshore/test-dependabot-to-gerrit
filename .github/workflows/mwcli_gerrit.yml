@@ -60,11 +60,13 @@ jobs:
         run: |
           set +e
           # Figure out some things
-          MSG_PRE=$((test -f job-failure && echo "Github Action Failed") || echo "Github Action Success")
+          SUCCESS_MESSAGE=$((test -f job-failure && echo "❌ Github Action Failed") || echo "✔️ Github Action Success")
+          LABEL_CR=$((test -f job-failure && echo "-1") || echo "+1")
           RUN_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
           # Build a review https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#review-input
           REVIEW={}
-          REVIEW=$(echo $REVIEW | jq --arg message "${MSG_PRE}: ${RUN_URL}" '. + {message: $message}')
+          REVIEW=$(echo $REVIEW | jq --arg message "${SUCCESS_MESSAGE}: ${RUN_URL}" '. + {message: $message}')
+          REVIEW=$(echo $REVIEW | jq --arg score "${LABEL_CR}" '. + {labels: { "Code-Review": $score}}')
           echo $REVIEW
           # Submit a review https://gerrit-review.googlesource.com/Documentation/cmd-review.html
           echo $REVIEW | ssh -p 29418 addbot@gerrit.wikimedia.org gerrit review --json ${{ github.event.inputs.report-change }}
