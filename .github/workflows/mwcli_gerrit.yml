@@ -53,6 +53,7 @@ jobs:
           known_hosts: ${{ secrets.GERRIT_KNOWN_HOST }}
       - name: Fetch job failure file
         uses: actions/download-artifact@v2
+        continue-on-error: true
         with:
           name: job-failure
       - name: Report to Gerrit
