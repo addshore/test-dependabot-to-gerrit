@@ -1,0 +1,25 @@
+name: Fetch from Gerrit and run File
+
+on:
+  workflow_dispatch:
+    inputs:
+      fetch-repo:
+        description: 'repo to fetch'
+        required: true
+      fetch-ref:
+        description: 'ref to fetch from repo'
+        required: true
+      run:
+        description: 'file to run'
+        required: true
+
+jobs:
+  run-file:
+    runs-on: ubuntu-latest
+    steps:
+      - name: fetch
+        run: |
+          git init . && git fetch "${{ github.event.inputs.fetch-repo }}" ${{ github.event.inputs.fetch-ref }} && git checkout FETCH_HEAD
+      - name: run
+        run: |
+          ${{ github.event.inputs.run }}
