@@ -1,4 +1,4 @@
-name: Fetch from Gerrit and run File
+name: Fetch from Gerrit, Run stuff, Report back
 
 on:
   workflow_dispatch:
@@ -31,6 +31,11 @@ jobs:
         run: |
           set -e
           ${{ matrix.run }}
+      - name: Record failures
+        if: ${{ !success() }}
+        id: record
+        run: echo "::set-output name=failure::true"
+
 
   report-back:
     if: always()
@@ -42,11 +47,11 @@ jobs:
         with:
           key: ${{ secrets.ADDBOT_GERRIT_SSH }}
           known_hosts: ${{ secrets.GERRIT_KNOWN_HOST }}
-      - name: Report (Success)
-        if: success()
-        run: |
-          ssh -p 29418 addbot@gerrit.wikimedia.org gerrit review --message "✔️ Github Action Success ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_NUMBER}" ${{ github.event.inputs.report-change }}
       - name: Report (Failure)
-        if: ${{ !success() }}
+        if: ${{ needs.run.outputs.failure == true }}
         run: |
           ssh -p 29418 addbot@gerrit.wikimedia.org gerrit review --message "❌ Github Action Failure ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_NUMBER}" ${{ github.event.inputs.report-change }}
+      - name: Report (Success)
+        if: ${{ needs.run.outputs.failure != true }}
+        run: |
+          ssh -p 29418 addbot@gerrit.wikimedia.org gerrit review --message "✔️ Github Action Success ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_NUMBER}" ${{ github.event.inputs.report-change }}
