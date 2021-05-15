@@ -17,22 +17,12 @@ on:
         required: true
 
 jobs:
-  matrix:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Create matrix from run-scripts
-        id: output-data
-        run: echo "::set-output name=matrix::$(echo ${{ github.event.inputs.run-scripts }} | jq -R -s -c 'split("\n")[:-1]')"
-    outputs:
-        matrix: ${{ steps.output-data.outputs.matrix }}
-
   run:
-    needs: [ matrix ]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-          run: ${{ fromJson(needs.matrix.outputs.matrix )}}
+          run: ${{ fromJson(github.event.inputs.run-scripts)}}
     steps:
       - name: Fetch Code
         run: |
