@@ -57,6 +57,6 @@ jobs:
         run: |
           ssh -p 29418 addbot@gerrit.wikimedia.org gerrit review --message "✔️ Github Action Success ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_NUMBER}" ${{ github.event.inputs.report-change }}
       - name: Report (Failure)
-        if: ! success()
+        if: ${{ !success() }}
         run: |
           ssh -p 29418 addbot@gerrit.wikimedia.org gerrit review --message "❌ Github Action Failure ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_NUMBER}" ${{ github.event.inputs.report-change }}
