@@ -54,6 +54,7 @@ jobs:
           RUN_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_NUMBER}"
           REVIEW={}
           REVIEW=$(echo $REVIEW | jq --arg message "${MSG_PRE}: ${RUN_URL}" '. + {message: $message}')
+          echo $REVIEW
       - name: Report to Gerrit
         run: |
           echo $REVIEW | ssh -p 29418 addbot@gerrit.wikimedia.org gerrit review --json ${{ github.event.inputs.report-change }}
