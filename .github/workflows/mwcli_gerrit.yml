@@ -17,9 +17,16 @@ jobs:
   run-file:
     runs-on: ubuntu-latest
     steps:
-      - name: fetch
+      - name: Setup Gerrit SSH
+        uses: MrSquaare/ssh-setup-action@v1
+        with:
+          host: gerrit.wikimedia.org
+          private-key: ${{ secrets.ADDBOT_GERRIT_SSH }}
+      - name: Fetch Code
         run: |
           git init . && git fetch "${{ github.event.inputs.fetch-repo }}" ${{ github.event.inputs.fetch-ref }} && git checkout FETCH_HEAD
-      - name: run
+      - name: Run Script
         run: |
           ${{ github.event.inputs.run }}
+      # - name: report
+      #   run: |
