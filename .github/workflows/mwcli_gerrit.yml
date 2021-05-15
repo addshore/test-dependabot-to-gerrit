@@ -49,6 +49,7 @@ jobs:
           known_hosts: ${{ secrets.GERRIT_KNOWN_HOST }}
       - name: Build Review JSON
         run: |
+          set +e
           MSG_PRE=$([[ ${{needs.run.outputs.failure == true}} == true ]] && echo "Github Action Failed")
           MSG_PRE=$([[ ${{needs.run.outputs.failure == true}} == false ]] && echo "Github Action Success")
           RUN_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_NUMBER}"
