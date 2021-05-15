@@ -47,11 +47,11 @@ jobs:
         with:
           key: ${{ secrets.ADDBOT_GERRIT_SSH }}
           known_hosts: ${{ secrets.GERRIT_KNOWN_HOST }}
-      - name: Report (Failure)
+      - name: Build Review Data
+        run: |
+          REVIEW={}
+          REVIEW=$(echo $REVIEW | jq message "Github Action ... ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_NUMBER}" '. + {message: $message}')
+      - name: Report to Gerrit
         if: ${{ needs.run.outputs.failure == true }}
         run: |
-          ssh -p 29418 addbot@gerrit.wikimedia.org gerrit review --message "Github Action Failure ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_NUMBER}" ${{ github.event.inputs.report-change }}
-      - name: Report (Success)
-        if: ${{ needs.run.outputs.failure != true }}
-        run: |
-          ssh -p 29418 addbot@gerrit.wikimedia.org gerrit review --message "Github Action Success ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_NUMBER}" ${{ github.event.inputs.report-change }}
+          echo $REVIEW | ssh -p 29418 addbot@gerrit.wikimedia.org gerrit review --json ${{ github.event.inputs.report-change }}
