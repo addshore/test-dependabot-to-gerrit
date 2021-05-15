@@ -50,8 +50,8 @@ jobs:
       - name: Build Review Data
         run: |
           REVIEW={}
-          MSG_PRE=$([[ ${{needs.run.outputs.failure}} == true ]] && echo "Github Action Failed")
-          MSG_PRE=$([[ ${{needs.run.outputs.failure}} != true ]] && echo "Github Action Success")
+          MSG_PRE=$([[ ${{needs.run.outputs.failure == true}} == true ]] && echo "Github Action Failed")
+          MSG_PRE=$([[ ${{needs.run.outputs.failure == true}} != true ]] && echo "Github Action Success")
           REVIEW=$(echo $REVIEW | jq --arg message "${MSG_PRE}: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_NUMBER}" '. + {message: $message}')
       - name: Report to Gerrit
         run: |
