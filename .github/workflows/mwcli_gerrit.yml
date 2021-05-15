@@ -31,11 +31,15 @@ jobs:
         run: |
           set -e
           ${{ matrix.run }}
-      - name: Record failures
+      - name: Create job failure file
         if: ${{ !success() }}
-        id: record
-        run: echo "::set-output name=failure::true"
-
+        run: echo "true" > job-failure
+      - name: Record job failure file
+        if: ${{ !success() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: job-failure
+          path: job-failure
 
   report-back:
     if: always()
@@ -47,13 +51,19 @@ jobs:
         with:
           key: ${{ secrets.ADDBOT_GERRIT_SSH }}
           known_hosts: ${{ secrets.GERRIT_KNOWN_HOST }}
+      - name: Fetch job failure file
+        uses: actions/download-artifact@v2
+        with:
+          name: job-failure
       - name: Report to Gerrit
         run: |
           set +e
-          MSG_PRE=$([[ ${{needs.run.outputs.failure == true}} == true ]] && echo "Github Action Failed")
-          MSG_PRE=$([[ ${{needs.run.outputs.failure == true}} == false ]] && echo "Github Action Success")
+          # Figure out some things
+          MSG_PRE=(test -f job-failure && echo "Github Action Failed") || echo "Github Action Success"
           RUN_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          # Build a review https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#review-input
           REVIEW={}
           REVIEW=$(echo $REVIEW | jq --arg message "${MSG_PRE}: ${RUN_URL}" '. + {message: $message}')
           echo $REVIEW
+          # Submit a review https://gerrit-review.googlesource.com/Documentation/cmd-review.html
           echo $REVIEW | ssh -p 29418 addbot@gerrit.wikimedia.org gerrit review --json ${{ github.event.inputs.report-change }}
