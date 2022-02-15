@@ -19,13 +19,13 @@ jobs:
     if: github.event_name != 'workflow_dispatch'
     name: Collect env files
     runs-on: ubuntu-latest
-    env:
-      LATEST: ${{ env.env_file_latest }}
-      PREVIOUS: ${{ env.env_file_previous }}
-      MANUAL: ${{ github.event.inputs.env_file_manual }}
     steps:
       - name: Output env file matrix
         id: output-step
+        env:
+          LATEST: ${{ env.env_file_latest }}
+          PREVIOUS: ${{ env.env_file_previous }}
+          MANUAL: ${{ github.event.inputs.env_file_manual }}
         run: |
           if [ ${{ github.event_name }} = "workflow_dispatch" ]; then
               echo "Workflow is being dispatched"
