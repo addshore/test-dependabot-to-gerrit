@@ -27,6 +27,7 @@ jobs:
           PREVIOUS: ${{ env.env_file_previous }}
           MANUAL: ${{ github.event.inputs.env_file_manual }}
         run: |
+          set +x
           if [ ${{ github.event_name }} = "workflow_dispatch" ]; then
               echo "Workflow is being dispatched"
               OUTPUT=[ \"$MANUAL\" ]
