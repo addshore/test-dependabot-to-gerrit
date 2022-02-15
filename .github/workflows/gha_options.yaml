@@ -40,6 +40,7 @@ jobs:
       matrix: ${{ steps.output-step.outputs.matrix }}
 
   build_wikibase:
+    needs: provide_env_files
     strategy:
       fail-fast: false
       matrix:
