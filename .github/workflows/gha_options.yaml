@@ -29,11 +29,13 @@ jobs:
         run: |
           if [ ${{ github.event_name }} = "workflow_dispatch" ]; then
               echo "Workflow is being dispatched"
-              echo "::set-output name=matrix::[ $MANUAL ]"
+              OUTPUT=[ $MANUAL ]
           else
               echo "Workflow is being run as pat of CI"
-              echo "::set-output name=matrix::[ $LATEST, $PREVIOUS ]"
+              OUTPUT=[ $LATEST, $PREVIOUS ]
           fi
+          echo $OUTPUT
+          echo "::set-output name=matrix::$OUTPUT"
     outputs:
       matrix: ${{ steps.output-step.outputs.matrix }}
 
