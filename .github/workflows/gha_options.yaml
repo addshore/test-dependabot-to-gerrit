@@ -30,10 +30,10 @@ jobs:
           set +x
           if [ ${{ github.event_name }} = "workflow_dispatch" ]; then
               echo "Workflow is being dispatched"
-              OUTPUT=[ \"$MANUAL\" ]
+              OUTPUT="[ \"$MANUAL\" ]"
           else
               echo "Workflow is being run as pat of CI"
-              OUTPUT=[ \"$LATEST\", \"$PREVIOUS\" ]
+              OUTPUT="[ \"$LATEST\", \"$PREVIOUS\" ]"
           fi
           echo $OUTPUT
           echo "::set-output name=matrix::$OUTPUT"
