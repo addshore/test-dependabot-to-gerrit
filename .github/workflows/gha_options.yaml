@@ -1,51 +1,18 @@
-name: Build and test Wikibase and friends
+name: TEST env vars
 
 on:
   workflow_dispatch:
     inputs:
-      env_file_manual:
+      multi_line:
         description: 'Environment file'
         required: true
-        default: '.env' # only gets set on a "workflow_dispatch" run
-  push:
-
-env:
-  env_file_latest: 'versions/wmde5.env'
-  env_file_previous: 'versions/wmde6.env'
-
+        default: ''
 jobs:
 
-  provide_env_files:
-    name: Collect env files
+  stuff:
     runs-on: ubuntu-latest
     steps:
-      - name: Output env file matrix
-        id: output-step
-        env:
-          LATEST: ${{ env.env_file_latest }}
-          PREVIOUS: ${{ env.env_file_previous }}
-          MANUAL: ${{ github.event.inputs.env_file_manual }}
-        run: |
-          set +x
-          if [ ${{ github.event_name }} = "workflow_dispatch" ]; then
-              echo "Workflow is being dispatched"
-              OUTPUT="[ \"$MANUAL\" ]"
-          else
-              echo "Workflow is being run as pat of CI"
-              OUTPUT="[ \"$LATEST\", \"$PREVIOUS\" ]"
-          fi
-          echo $OUTPUT
-          echo "::set-output name=matrix::$OUTPUT"
-    outputs:
-      matrix: ${{ steps.output-step.outputs.matrix }}
-
-  build_wikibase:
-    needs: provide_env_files
-    strategy:
-      fail-fast: false
-      matrix:
-        env_file: ${{fromJson(needs.provide_env_files.outputs.matrix)}}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Do stuff
-        run: echo ${{ env.env_file }}
+    - name: paste
+      run: echo "${{ github.event.inputs.multi_line }}" > text
+    - name: test
+      run: cat text
