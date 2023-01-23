@@ -13,6 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: paste
-      run: echo "${{ github.event.inputs.multi_line }}" > text
+      run: printf "${{ github.event.inputs.multi_line }}" > text
     - name: test
       run: cat text
