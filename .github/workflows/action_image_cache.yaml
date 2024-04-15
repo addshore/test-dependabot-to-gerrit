@@ -1,0 +1,23 @@
+name: Action image Caching?
+
+on:
+    push:
+        branches:
+            - main
+
+jobs:
+    build:
+        strategy:
+            matrix:
+                variant:
+                    - P
+                    - Z
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            # https://github.com/xanderhendriks/action-build-stm32cubeide/commit/9d842f888f9c8b849e2913e71053a74a877ae62d FAKE DOCKER FILE :D
+            - uses: addshore/action-build-stm32cubeide@9d842f888f9c8b849e2913e71053a74a877ae62d
+              with:
+                project-path: '.'
+                project-target: 'XXX/Release'
+                build-variant: ${{ matrix.variant }}
