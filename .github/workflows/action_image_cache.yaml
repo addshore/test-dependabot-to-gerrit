@@ -19,5 +19,5 @@ jobs:
             # - uses: addshore/action-build-stm32cubeide@9d842f888f9c8b849e2913e71053a74a877ae62d
             - uses: docker://ghcr.io/addshore/action-build-stm32cubeide:fake-dockerfile
               with:
-                entrypoint: /bin/echo
-                args: . XXX/Release ${{ matrix.variant }}
+                entrypoint: /entrypoint.sh
+#                args: . XXX/Release ${{ matrix.variant }}
